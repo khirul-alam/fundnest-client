@@ -1,0 +1,18 @@
+import Link from "next/link";
+
+export default function NotFound() {
+  return (
+    <div className="flex min-h-screen flex-col items-center justify-center gap-5">
+      <h1 className="text-5xl font-bold">
+        404
+      </h1>
+
+      <Link
+        href="/"
+        className="rounded-lg bg-blue-600 px-5 py-2 text-white"
+      >
+        Home
+      </Link>
+    </div>
+  );
+}
