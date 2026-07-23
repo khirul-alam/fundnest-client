@@ -1,89 +1,121 @@
-import Image from "next/image";
-import Link from "next/link";
+'use client'
 
-export default function CampaignCard({ campaign }) {
-  const progress = Math.round(
-    (campaign.raised / campaign.goal) * 100
-  );
+import Image from 'next/image'
+import { motion } from 'framer-motion'
+import { CalendarDays, Target, User } from 'lucide-react'
+import Link from 'next/link'
+
+import campaignPlaceholder from '@/assets/images/campaign-placeholder.jpg'
+
+export default function CampaignCard ({ campaign }) {
+  const {
+    title = '',
+    category = '',
+    image = '',
+    goalAmount = 0,
+    raisedAmount = 0,
+    creatorName = '',
+    deadline = ''
+  } = campaign || {}
+
+  // Safe Numbers
+  const safeGoal = Number(goalAmount) || 0
+  const safeRaised = Number(raisedAmount) || 0
+
+  // Progress Percentage
+  const progress =
+    safeGoal > 0 ? Math.min(Math.round((safeRaised / safeGoal) * 100), 100) : 0
+
+  // Days Left
+  const today = new Date()
+  const endDate = deadline ? new Date(deadline) : today
+
+  const daysLeft = Math.max(
+    Math.ceil((endDate - today) / (1000 * 60 * 60 * 24)),
+    0
+  )
+
+  // Image Source
+  const imageSrc =
+    image && image.startsWith('http') && !image.includes('example.com')
+      ? image
+      : campaignPlaceholder
 
   return (
-    <div className="overflow-hidden rounded-2xl bg-white shadow-lg transition duration-300 hover:-translate-y-2 hover:shadow-2xl">
+    <motion.div
+      whileHover={{ y: -8 }}
+      transition={{ duration: 0.25 }}
+      className='overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition hover:shadow-xl'
+    >
+      {/* Campaign Image */}
+      <div className='relative h-56 w-full overflow-hidden'>
+        <Image
+          src={imageSrc}
+          alt={title}
+          fill
+          className='object-cover transition duration-500 hover:scale-105'
+        />
 
-      <Image
-        src={campaign.image}
-        alt={campaign.title}
-        className="h-56 w-full object-cover"
-      />
-
-      <div className="p-6">
-
-        <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-600">
-          {campaign.category}
+        <span className='absolute left-4 top-4 rounded-full bg-blue-600 px-3 py-1 text-xs font-semibold text-white'>
+          {category}
         </span>
+      </div>
 
-        <h3 className="mt-4 text-2xl font-bold">
-          {campaign.title}
-        </h3>
+      {/* Card Content */}
+      <div className='space-y-5 p-5'>
+        {/* Title */}
+        <div>
+          <h3 className='line-clamp-2 text-xl font-bold text-gray-900'>
+            {title}
+          </h3>
 
-        <p className="mt-3 text-gray-600">
-          {campaign.description}
-        </p>
+          <div className='mt-3 flex items-center gap-2 text-sm text-gray-500'>
+            <User size={16} />
+            <span>{creatorName}</span>
+          </div>
+        </div>
 
-        <div className="mt-6">
+        {/* Progress */}
+        <div>
+          <div className='mb-2 flex justify-between text-sm font-medium'>
+            <span>{progress}% Funded</span>
 
-          <div className="mb-2 flex justify-between text-sm">
-            <span>Raised</span>
-
-            <span>{progress}%</span>
+            <span>
+              ${safeRaised.toLocaleString()} / ${safeGoal.toLocaleString()}
+            </span>
           </div>
 
-          <div className="h-3 rounded-full bg-gray-200">
-
+          <div className='h-2 overflow-hidden rounded-full bg-gray-200'>
             <div
-              className="h-3 rounded-full bg-blue-600"
-              style={{ width: `${progress}%` }}
+              className='h-full rounded-full bg-blue-600 transition-all duration-700'
+              style={{
+                width: `${progress}%`
+              }}
             />
-
           </div>
-
         </div>
 
-        <div className="mt-6 flex justify-between">
-
-          <div>
-
-            <p className="text-sm text-gray-500">
-              Raised
-            </p>
-
-            <h4 className="font-bold text-blue-600">
-              ${campaign.raised.toLocaleString()}
-            </h4>
-
+        {/* Bottom */}
+        <div className='flex items-center justify-between border-t pt-4 text-sm text-gray-600'>
+          <div className='flex items-center gap-2'>
+            <Target size={16} />
+            <span>Goal ${safeGoal.toLocaleString()}</span>
           </div>
 
-          <div>
-
-            <p className="text-sm text-gray-500">
-              Goal
-            </p>
-
-            <h4 className="font-bold">
-              ${campaign.goal.toLocaleString()}
-            </h4>
-
+          <div className='flex items-center gap-2'>
+            <CalendarDays size={16} />
+            <span>{daysLeft} Days Left</span>
           </div>
-
         </div>
 
+        {/* Button */}
         <Link
-          href={`/campaign/${campaign.id}`}
-          className="mt-8 block rounded-xl bg-blue-600 py-3 text-center font-semibold text-white transition hover:bg-blue-700"
+          href={`/campaigns/${campaign._id}`}
+          className='block w-full rounded-xl bg-blue-600 py-3 text-center font-semibold text-white transition duration-300 hover:bg-blue-700'
         >
           View Details
         </Link>
-
       </div>
-    </div>
-  );
+    </motion.div>
+  )
 }

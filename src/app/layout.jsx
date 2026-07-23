@@ -1,32 +1,35 @@
-import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
+import { Geist, Geist_Mono } from 'next/font/google'
+import './globals.css'
+import QueryProvider from '../providers/QueryProvider'
 
-import AuthProvider from "../providers/AuthProvider";
+import AuthProvider from '../providers/AuthProvider'
 
 const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
+  variable: '--font-geist-sans',
+  subsets: ['latin']
+})
 
 const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+  variable: '--font-geist-mono',
+  subsets: ['latin']
+})
 
 export const metadata = {
-  title: "FundNest",
-  description: "Crowdfunding Platform",
-};
+  title: 'FundNest',
+  description: 'Crowdfunding Platform'
+}
 
-export default function RootLayout({ children }) {
+export default function RootLayout ({ children }) {
   return (
     <html
-      lang="en"
+      lang='en'
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">
-        <AuthProvider>{children}</AuthProvider>
+      <body className='min-h-full flex flex-col'>
+        <QueryProvider>
+          <AuthProvider>{children}</AuthProvider>
+        </QueryProvider>
       </body>
     </html>
-  );
+  )
 }
